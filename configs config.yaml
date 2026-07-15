@@ -1,0 +1,11 @@
+yolo_weights: yolov8n.pt   # change to yolov8s.pt / custom best.pt if you have one
+camera_index: 0
+detection_conf: 0.35
+iou: 0.45
+frame_width: 640
+frame_height: 480
+buffer_seconds: 10
+sampling_interval: 1      # seconds between samples for time-series
+sequence_length: 12       # lookback for LSTM/GRU
+models_dir: models
+data_dir: data

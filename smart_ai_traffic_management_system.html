@@ -1,0 +1,1581 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0e1a;
+    --panel: #0f1526;
+    --panel2: #141c30;
+    --border: rgba(100,160,255,0.12);
+    --accent: #3b82f6;
+    --accent2: #06d6a0;
+    --accent3: #f59e0b;
+    --accent4: #ef4444;
+    --accent5: #8b5cf6;
+    --text: #e2e8f0;
+    --text2: #94a3b8;
+    --text3: #4a5568;
+    --green: #06d6a0;
+    --yellow: #f59e0b;
+    --red: #ef4444;
+    --blue: #3b82f6;
+    --purple: #8b5cf6;
+    --cyan: #06b6d4;
+    --glow-blue: 0 0 20px rgba(59,130,246,0.3);
+    --glow-green: 0 0 20px rgba(6,214,160,0.3);
+    --glow-red: 0 0 20px rgba(239,68,68,0.3);
+  }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* ═══ TOP HEADER ═══ */
+  .header {
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-left { display: flex; align-items: center; gap: 12px; }
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--blue), var(--purple));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; box-shadow: var(--glow-blue);
+  }
+  .header h1 { font-size: 16px; font-weight: 700; letter-spacing: 0.5px; }
+  .header p { font-size: 11px; color: var(--text2); margin-top: 1px; }
+  .header-right { display: flex; align-items: center; gap: 16px; }
+  .system-status {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 11px; color: var(--green);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .pulse {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--green);
+    animation: pulse 2s ease-in-out infinite;
+    box-shadow: 0 0 8px var(--green);
+  }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+
+  .time-display {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; color: var(--blue);
+    background: rgba(59,130,246,0.1);
+    border: 1px solid rgba(59,130,246,0.2);
+    padding: 4px 10px; border-radius: 6px;
+  }
+
+  /* ═══ TABS ═══ */
+  .tabs {
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    display: flex; padding: 0 20px; gap: 4px;
+  }
+  .tab {
+    padding: 10px 18px; font-size: 13px; font-weight: 500;
+    border: none; background: none; color: var(--text2);
+    cursor: pointer; border-bottom: 2px solid transparent;
+    transition: all 0.2s; border-radius: 0;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+  /* ═══ MAIN LAYOUT ═══ */
+  .main { display: flex; height: calc(100vh - 97px); overflow: hidden; }
+  .sidebar {
+    width: 260px; min-width: 260px;
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    overflow-y: auto; padding: 12px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .content { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+  .right-panel {
+    width: 280px; min-width: 280px;
+    background: var(--panel);
+    border-left: 1px solid var(--border);
+    overflow-y: auto; padding: 12px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+
+  /* ═══ CARDS ═══ */
+  .card {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px;
+  }
+  .card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .card-title { font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--text2); }
+  .badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; padding: 2px 7px; border-radius: 4px;
+  }
+  .badge-blue { background: rgba(59,130,246,0.15); color: var(--blue); border: 1px solid rgba(59,130,246,0.25); }
+  .badge-green { background: rgba(6,214,160,0.15); color: var(--green); border: 1px solid rgba(6,214,160,0.25); }
+  .badge-red { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.25); }
+  .badge-yellow { background: rgba(245,158,11,0.15); color: var(--yellow); border: 1px solid rgba(245,158,11,0.25); }
+  .badge-purple { background: rgba(139,92,246,0.15); color: var(--purple); border: 1px solid rgba(139,92,246,0.25); }
+
+  /* ═══ KPI METRICS ═══ */
+  .metrics-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .metric-card {
+    background: var(--panel2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px;
+    position: relative; overflow: hidden;
+  }
+  .metric-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  }
+  .metric-card.blue::before { background: linear-gradient(90deg, var(--blue), transparent); }
+  .metric-card.green::before { background: linear-gradient(90deg, var(--green), transparent); }
+  .metric-card.yellow::before { background: linear-gradient(90deg, var(--yellow), transparent); }
+  .metric-card.purple::before { background: linear-gradient(90deg, var(--purple), transparent); }
+  .metric-card.red::before { background: linear-gradient(90deg, var(--red), transparent); }
+  .metric-label { font-size: 10px; color: var(--text2); letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 6px; }
+  .metric-value { font-family: 'JetBrains Mono', monospace; font-size: 28px; font-weight: 700; line-height: 1; }
+  .metric-value.blue { color: var(--blue); }
+  .metric-value.green { color: var(--green); }
+  .metric-value.yellow { color: var(--yellow); }
+  .metric-value.purple { color: var(--purple); }
+  .metric-value.red { color: var(--red); }
+  .metric-change { font-size: 11px; margin-top: 4px; }
+  .metric-change.up { color: var(--green); }
+  .metric-change.down { color: var(--red); }
+
+  /* ═══ TRAFFIC MAP ═══ */
+  .map-container {
+    background: var(--panel2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px;
+    position: relative;
+  }
+  .map-canvas {
+    width: 100%; height: 360px;
+    background: #080c16;
+    border-radius: 8px; position: relative;
+    overflow: hidden;
+  }
+  .map-canvas canvas { display: block; width: 100%; height: 100%; }
+
+  /* ═══ INTERSECTION NODES ═══ */
+  .intersection {
+    position: absolute; cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .intersection:hover { transform: scale(1.2); z-index: 10; }
+  .int-dot {
+    width: 16px; height: 16px; border-radius: 50%;
+    border: 2px solid;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 7px; font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .int-dot.green { background: rgba(6,214,160,0.25); border-color: var(--green); color: var(--green); box-shadow: 0 0 10px rgba(6,214,160,0.4); }
+  .int-dot.yellow { background: rgba(245,158,11,0.25); border-color: var(--yellow); color: var(--yellow); box-shadow: 0 0 10px rgba(245,158,11,0.4); }
+  .int-dot.red { background: rgba(239,68,68,0.25); border-color: var(--red); color: var(--red); box-shadow: 0 0 10px rgba(239,68,68,0.4); }
+  .int-label {
+    font-size: 9px; color: var(--text2); text-align: center;
+    margin-top: 2px; white-space: nowrap;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ═══ AGENTS ═══ */
+  .agent-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px; border-radius: 8px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.02);
+    cursor: pointer; transition: all 0.2s;
+    margin-bottom: 6px;
+  }
+  .agent-item:hover { background: rgba(59,130,246,0.05); border-color: rgba(59,130,246,0.2); }
+  .agent-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+  .agent-icon.blue { background: rgba(59,130,246,0.15); }
+  .agent-icon.green { background: rgba(6,214,160,0.15); }
+  .agent-icon.purple { background: rgba(139,92,246,0.15); }
+  .agent-icon.yellow { background: rgba(245,158,11,0.15); }
+  .agent-icon.cyan { background: rgba(6,182,212,0.15); }
+  .agent-name { font-size: 12px; font-weight: 600; }
+  .agent-status { font-size: 10px; color: var(--text2); margin-top: 1px; }
+  .agent-activity { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--green); margin-top: 2px; }
+
+  /* ═══ SIGNAL TIMING ═══ */
+  .signal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .signal-card {
+    background: rgba(255,255,255,0.02); border-radius: 8px;
+    border: 1px solid var(--border); padding: 8px;
+  }
+  .signal-id { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text2); margin-bottom: 4px; }
+  .signal-lights { display: flex; gap: 4px; margin-bottom: 6px; }
+  .light {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+  }
+  .light.r.active { background: var(--red); box-shadow: 0 0 6px var(--red); }
+  .light.y.active { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); }
+  .light.g.active { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .signal-timer { font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 700; }
+  .signal-phase { font-size: 10px; color: var(--text2); }
+  .timer-bar { height: 3px; background: rgba(255,255,255,0.05); border-radius: 2px; margin-top: 6px; overflow: hidden; }
+  .timer-fill { height: 100%; border-radius: 2px; transition: width 1s linear; }
+
+  /* ═══ LOG FEED ═══ */
+  .log-feed { max-height: 200px; overflow-y: auto; }
+  .log-entry {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; padding: 4px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    display: flex; gap: 8px;
+  }
+  .log-time { color: var(--text3); min-width: 55px; }
+  .log-agent { min-width: 60px; }
+  .log-msg { color: var(--text2); flex: 1; }
+  .log-feed::-webkit-scrollbar { width: 4px; }
+  .log-feed::-webkit-scrollbar-track { background: transparent; }
+  .log-feed::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* ═══ MINI BARS ═══ */
+  .bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .bar-label { font-size: 11px; color: var(--text2); min-width: 90px; }
+  .bar-track { flex: 1; height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
+  .bar-val { font-family: 'JetBrains Mono', monospace; font-size: 10px; min-width: 36px; text-align: right; }
+
+  /* ═══ CAMERA FEED ═══ */
+  .cameras { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .cam-feed {
+    background: #030507; border-radius: 8px;
+    border: 1px solid var(--border);
+    aspect-ratio: 16/10; position: relative;
+    overflow: hidden;
+  }
+  .cam-canvas { width: 100%; height: 100%; display: block; }
+  .cam-label {
+    position: absolute; top: 6px; left: 6px;
+    background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+    font-family: 'JetBrains Mono', monospace; font-size: 9px;
+    color: var(--green); padding: 2px 6px; border-radius: 3px;
+    border: 1px solid rgba(6,214,160,0.3);
+  }
+  .cam-rec {
+    position: absolute; top: 6px; right: 6px;
+    width: 7px; height: 7px; border-radius: 50%; background: var(--red);
+    box-shadow: 0 0 6px var(--red);
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  .cam-overlay {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+    padding: 8px; display: flex; justify-content: space-between;
+    align-items: flex-end;
+  }
+  .cam-stat { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--text2); }
+  .cam-count { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--green); font-weight: 700; }
+
+  /* ═══ INCIDENT ALERTS ═══ */
+  .incident {
+    padding: 8px 10px; border-radius: 8px; margin-bottom: 6px;
+    display: flex; gap: 8px; align-items: flex-start;
+    border: 1px solid;
+  }
+  .incident.high { background: rgba(239,68,68,0.06); border-color: rgba(239,68,68,0.2); }
+  .incident.med { background: rgba(245,158,11,0.06); border-color: rgba(245,158,11,0.2); }
+  .incident.low { background: rgba(6,214,160,0.06); border-color: rgba(6,214,160,0.2); }
+  .incident-icon { font-size: 16px; flex-shrink: 0; }
+  .incident-title { font-size: 12px; font-weight: 600; }
+  .incident-detail { font-size: 10px; color: var(--text2); margin-top: 2px; }
+  .incident-time { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--text3); margin-top: 3px; }
+
+  /* ═══ CONTROLS ═══ */
+  .ctrl-row { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+  .ctrl-btn {
+    padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 600;
+    border: 1px solid; cursor: pointer; transition: all 0.2s;
+    font-family: 'Outfit', sans-serif;
+  }
+  .ctrl-btn.blue { background: rgba(59,130,246,0.12); border-color: rgba(59,130,246,0.3); color: var(--blue); }
+  .ctrl-btn.blue:hover { background: rgba(59,130,246,0.25); }
+  .ctrl-btn.green { background: rgba(6,214,160,0.12); border-color: rgba(6,214,160,0.3); color: var(--green); }
+  .ctrl-btn.green:hover { background: rgba(6,214,160,0.25); }
+  .ctrl-btn.red { background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.3); color: var(--red); }
+  .ctrl-btn.red:hover { background: rgba(239,68,68,0.25); }
+  .ctrl-btn.purple { background: rgba(139,92,246,0.12); border-color: rgba(139,92,246,0.3); color: var(--purple); }
+  .ctrl-btn.purple:hover { background: rgba(139,92,246,0.25); }
+
+  /* ═══ MODAL ═══ */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.2s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 14px; padding: 20px; width: 480px; max-width: 95vw;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    transform: translateY(20px); transition: transform 0.2s;
+  }
+  .modal-overlay.open .modal { transform: translateY(0); }
+  .modal-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+  .modal-sub { font-size: 12px; color: var(--text2); margin-bottom: 14px; }
+  .modal-close { float: right; background: none; border: none; color: var(--text2); cursor: pointer; font-size: 18px; }
+
+  /* ═══ CHART MINI ═══ */
+  .mini-chart { height: 60px; width: 100%; }
+
+  /* ═══ FLOW TABS ═══ */
+  .page { display: none; }
+  .page.active { display: flex; flex-direction: column; gap: 12px; }
+
+  /* ═══ AI DECISION LOG ═══ */
+  .decision-entry {
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px; margin-bottom: 8px;
+    background: rgba(255,255,255,0.01);
+  }
+  .decision-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .decision-agent { font-size: 11px; font-weight: 600; color: var(--blue); }
+  .decision-time { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--text3); }
+  .decision-action { font-size: 12px; margin-bottom: 4px; }
+  .decision-reason { font-size: 10px; color: var(--text2); line-height: 1.5; }
+  .decision-confidence { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--green); margin-top: 4px; }
+
+  /* ═══ SCROLLBAR ═══ */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(100,160,255,0.15); border-radius: 3px; }
+
+  /* ═══ TOOLTIP ═══ */
+  .tooltip {
+    position: absolute; background: var(--panel); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 12px; font-size: 11px;
+    pointer-events: none; z-index: 50; white-space: nowrap;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <div class="logo-icon">🚦</div>
+    <div>
+      <h1>NEXUS Traffic Intelligence Platform</h1>
+      <p>Multimodal AI · Agentic Control · Real-time Optimization</p>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="system-status">
+      <div class="pulse"></div>
+      <span>ALL SYSTEMS OPERATIONAL</span>
+    </div>
+    <div class="time-display mono" id="clock">--:--:--</div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('dashboard')">📊 Dashboard</button>
+  <button class="tab" onclick="switchTab('agents')">🤖 AI Agents</button>
+  <button class="tab" onclick="switchTab('signals')">🚦 Signal Control</button>
+  <button class="tab" onclick="switchTab('vision')">📷 Vision AI</button>
+  <button class="tab" onclick="switchTab('analytics')">📈 Analytics</button>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="card-title" style="padding: 4px 2px; color: var(--text3)">LIVE INTERSECTIONS</div>
+
+    <!-- Intersection nodes will be rendered here -->
+    <div id="intersection-list"></div>
+
+    <div style="border-top: 1px solid var(--border); padding-top: 10px; margin-top: 4px;">
+      <div class="card-title" style="margin-bottom: 8px; color: var(--text3)">ACTIVE INCIDENTS</div>
+      <div id="incident-list"></div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- DASHBOARD PAGE -->
+    <div class="page active" id="page-dashboard">
+      <!-- KPI Row -->
+      <div class="metrics-row">
+        <div class="metric-card blue">
+          <div class="metric-label">Vehicles / Hour</div>
+          <div class="metric-value blue mono" id="kpi-flow">4,287</div>
+          <div class="metric-change up">↑ 12.3% vs avg</div>
+        </div>
+        <div class="metric-card green">
+          <div class="metric-label">Avg Speed (km/h)</div>
+          <div class="metric-value green mono" id="kpi-speed">42.7</div>
+          <div class="metric-change up">↑ 8.1% optimized</div>
+        </div>
+        <div class="metric-card yellow">
+          <div class="metric-label">Avg Wait Time (s)</div>
+          <div class="metric-value yellow mono" id="kpi-wait">18.4</div>
+          <div class="metric-change up">↓ 34% reduced</div>
+        </div>
+        <div class="metric-card purple">
+          <div class="metric-label">AI Decisions / min</div>
+          <div class="metric-value purple mono" id="kpi-decisions">247</div>
+          <div class="metric-change up">↑ Continuous</div>
+        </div>
+      </div>
+
+      <!-- Map + Chart -->
+      <div style="display:grid;grid-template-columns:1fr 280px;gap:12px;">
+        <div class="map-container">
+          <div class="card-header">
+            <span class="card-title">LIVE TRAFFIC MAP — SECTOR 7</span>
+            <div style="display:flex;gap:6px;">
+              <span class="badge badge-green">OPTIMIZING</span>
+              <span class="badge badge-blue">12 AGENTS</span>
+            </div>
+          </div>
+          <div class="map-canvas" id="map-canvas">
+            <canvas id="traffic-canvas"></canvas>
+            <div class="tooltip" id="map-tooltip"></div>
+          </div>
+          <div class="ctrl-row" style="margin-top:10px;">
+            <button class="ctrl-btn blue" onclick="triggerOptimize()">⚡ Optimize All</button>
+            <button class="ctrl-btn green" onclick="triggerGreenWave()">🌊 Green Wave</button>
+            <button class="ctrl-btn red" onclick="triggerIncident()">⚠️ Sim Incident</button>
+            <button class="ctrl-btn purple" onclick="showAIPanel()">🤖 AI Override</button>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <!-- Flow Trends -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">TRAFFIC FLOW</span>
+              <span class="badge badge-blue">24H</span>
+            </div>
+            <canvas id="flow-chart" height="80"></canvas>
+          </div>
+          <!-- Congestion Index -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">CONGESTION INDEX</span>
+            </div>
+            <div id="congestion-bars"></div>
+          </div>
+          <!-- Emissions -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">EMISSIONS SAVED</span>
+              <span class="badge badge-green">TODAY</span>
+            </div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:22px;color:var(--green);font-weight:700;">2.4 tonnes</div>
+            <div style="font-size:11px;color:var(--text2);margin-top:3px;">CO₂ equivalent reduced</div>
+            <canvas id="emission-chart" height="50" style="margin-top:8px;"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Agent Activity Feed -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">AGENT ACTIVITY LOG</span>
+          <span class="badge badge-green" id="log-count">LIVE</span>
+        </div>
+        <div class="log-feed" id="activity-log"></div>
+      </div>
+    </div>
+
+    <!-- AGENTS PAGE -->
+    <div class="page" id="page-agents">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div id="agent-detail-grid"></div>
+        <div>
+          <div class="card" style="margin-bottom:12px;">
+            <div class="card-header">
+              <span class="card-title">AGENT COMMUNICATION GRAPH</span>
+            </div>
+            <canvas id="agent-graph" height="200"></canvas>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">DECISION PIPELINE</span>
+            </div>
+            <div id="decision-log-view" style="max-height:220px;overflow-y:auto;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIGNALS PAGE -->
+    <div class="page" id="page-signals">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">SIGNAL PHASE CONTROL</span>
+          <span class="badge badge-purple">ADAPTIVE MODE</span>
+        </div>
+        <div class="signal-grid" id="signal-grid"></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">PHASE SPACE-TIME DIAGRAM</span>
+        </div>
+        <canvas id="phase-diagram" height="120"></canvas>
+      </div>
+    </div>
+
+    <!-- VISION PAGE -->
+    <div class="page" id="page-vision">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">COMPUTER VISION — LIVE FEEDS</span>
+          <span class="badge badge-red">● REC</span>
+        </div>
+        <div class="cameras" id="cameras-grid"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="card">
+          <div class="card-header"><span class="card-title">OBJECT DETECTION</span></div>
+          <div id="detection-stats"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">MULTIMODAL FUSION</span></div>
+          <div id="fusion-display"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ANALYTICS PAGE -->
+    <div class="page" id="page-analytics">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="card">
+          <div class="card-header"><span class="card-title">THROUGHPUT ANALYSIS</span></div>
+          <canvas id="throughput-chart" height="160"></canvas>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">MODE SPLIT</span></div>
+          <canvas id="mode-chart" height="160"></canvas>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">OPTIMIZATION PERFORMANCE</span></div>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;padding:8px 0;">
+          <div style="text-align:center;">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700;color:var(--green);">34%</div>
+            <div style="font-size:10px;color:var(--text2);margin-top:2px;">Wait Time Reduction</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700;color:var(--blue);">18%</div>
+            <div style="font-size:10px;color:var(--text2);margin-top:2px;">Throughput Increase</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700;color:var(--purple);">99.7%</div>
+            <div style="font-size:10px;color:var(--text2);margin-top:2px;">Uptime SLA</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700;color:var(--yellow);">1.2s</div>
+            <div style="font-size:10px;color:var(--text2);margin-top:2px;">Avg Response Time</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700;color:var(--green);">247K</div>
+            <div style="font-size:10px;color:var(--text2);margin-top:2px;">Decisions Today</div>
+          </div>
+        </div>
+        <canvas id="perf-chart" height="100" style="margin-top:8px;"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+    <!-- Signal Timing -->
+    <div class="card-title" style="color:var(--text3);padding:4px 2px;">SIGNAL STATUS</div>
+    <div id="mini-signals"></div>
+
+    <!-- AI Agents Quick View -->
+    <div style="border-top: 1px solid var(--border); padding-top: 10px; margin-top:4px;">
+      <div class="card-title" style="margin-bottom:8px;color:var(--text3);">ACTIVE AI AGENTS</div>
+      <div id="agent-mini-list"></div>
+    </div>
+
+    <!-- Sensor Fusion -->
+    <div style="border-top: 1px solid var(--border); padding-top: 10px; margin-top:4px;">
+      <div class="card-title" style="margin-bottom:8px;color:var(--text3);">SENSOR FUSION</div>
+      <div id="sensor-bars"></div>
+    </div>
+  </div>
+</div>
+
+<!-- AI Override Modal -->
+<div class="modal-overlay" id="ai-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-title">🤖 AI Override Panel</div>
+    <div class="modal-sub">Configure multimodal AI agent behavior and decision parameters</div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div class="card" style="padding:10px;">
+        <div class="card-title" style="margin-bottom:8px;">ORCHESTRATOR AGENT</div>
+        <div class="ctrl-row">
+          <button class="ctrl-btn blue" onclick="agentCmd('optimize')">⚡ Global Optimize</button>
+          <button class="ctrl-btn green" onclick="agentCmd('greenwave')">🌊 Green Wave Mode</button>
+        </div>
+        <div class="ctrl-row">
+          <button class="ctrl-btn yellow" onclick="agentCmd('emergency')">🚨 Emergency Corridor</button>
+          <button class="ctrl-btn purple" onclick="agentCmd('predict')">🔮 Predict 30min</button>
+        </div>
+      </div>
+      <div class="card" style="padding:10px;">
+        <div class="card-title" style="margin-bottom:8px;">OPTIMIZATION WEIGHTS</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;"><span>Throughput</span><span class="mono" id="w1v">70%</span></div>
+            <input type="range" min="0" max="100" value="70" oninput="document.getElementById('w1v').textContent=this.value+'%'" style="width:100%;">
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;"><span>Fairness</span><span class="mono" id="w2v">60%</span></div>
+            <input type="range" min="0" max="100" value="60" oninput="document.getElementById('w2v').textContent=this.value+'%'" style="width:100%;">
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;"><span>Emissions</span><span class="mono" id="w3v">45%</span></div>
+            <input type="range" min="0" max="100" value="45" oninput="document.getElementById('w3v').textContent=this.value+'%'" style="width:100%;">
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;"><span>Emergency Priority</span><span class="mono" id="w4v">90%</span></div>
+            <input type="range" min="0" max="100" value="90" oninput="document.getElementById('w4v').textContent=this.value+'%'" style="width:100%;">
+          </div>
+        </div>
+      </div>
+      <div id="modal-agent-output" style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--green);background:rgba(6,214,160,0.05);border:1px solid rgba(6,214,160,0.15);border-radius:6px;padding:8px;min-height:40px;"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// DATA MODEL
+// ═══════════════════════════════════════════════════════════════
+
+const intersections = [
+  { id:'INT-A1', name:'Main & 1st', x:0.15, y:0.2, status:'green', density:0.3, flow:820 },
+  { id:'INT-A2', name:'Main & Oak', x:0.38, y:0.2, status:'yellow', density:0.65, flow:1240 },
+  { id:'INT-A3', name:'Main & Park', x:0.62, y:0.2, status:'green', density:0.45, flow:970 },
+  { id:'INT-A4', name:'Main & 5th', x:0.85, y:0.2, status:'red', density:0.88, flow:1850 },
+  { id:'INT-B1', name:'Oak & 1st', x:0.15, y:0.5, status:'green', density:0.25, flow:640 },
+  { id:'INT-B2', name:'Center Hub', x:0.38, y:0.5, status:'red', density:0.92, flow:2100 },
+  { id:'INT-B3', name:'Oak & Park', x:0.62, y:0.5, status:'green', density:0.38, flow:780 },
+  { id:'INT-B4', name:'Oak & 5th', x:0.85, y:0.5, status:'yellow', density:0.72, flow:1460 },
+  { id:'INT-C1', name:'Park & 1st', x:0.15, y:0.8, status:'green', density:0.2, flow:420 },
+  { id:'INT-C2', name:'Park & Oak', x:0.38, y:0.8, status:'green', density:0.42, flow:890 },
+  { id:'INT-C3', name:'Commerce Sq', x:0.62, y:0.8, status:'yellow', density:0.68, flow:1380 },
+  { id:'INT-C4', name:'Terminal Rd', x:0.85, y:0.8, status:'green', density:0.35, flow:710 },
+];
+
+const agents = [
+  { id:'ORCH-1', name:'Orchestrator', icon:'🧠', color:'purple', role:'Master coordinator', status:'Planning global optimization', decisions:1247, load:78 },
+  { id:'VISION-1', name:'Vision AI', icon:'👁️', color:'blue', role:'Computer vision', status:'Detecting 48 objects in 12 feeds', decisions:8421, load:92 },
+  { id:'PRED-1', name:'Predictor', icon:'🔮', color:'cyan', role:'Flow forecasting', status:'30-min horizon active', decisions:342, load:65 },
+  { id:'SIGNAL-1', name:'Signal Ctrl', icon:'🚦', color:'green', role:'Phase optimization', status:'Adaptive timing active', decisions:2847, load:84 },
+  { id:'INC-1', name:'Incident Det', icon:'⚠️', color:'yellow', role:'Anomaly detection', status:'Monitoring 12 zones', decisions:89, load:45 },
+  { id:'ROUTE-1', name:'Router', icon:'🗺️', color:'blue', role:'Dynamic routing', status:'Calculating 847 routes', decisions:4120, load:71 },
+  { id:'EMG-1', name:'Emergency', icon:'🚨', color:'red', role:'Priority corridors', status:'Standby — clear path', decisions:23, load:12 },
+  { id:'ENV-1', name:'Eco Agent', icon:'🌿', color:'green', role:'Emissions optimizer', status:'Saved 2.4t CO₂ today', decisions:671, load:38 },
+];
+
+const incidents = [
+  { level:'high', icon:'🚗', title:'Heavy Congestion', detail:'INT-B2 — 92% density, queue 800m', time:'2 min ago' },
+  { level:'med', icon:'🚧', title:'Road Work Active', detail:'Main & 5th — 1 lane closed', time:'18 min ago' },
+  { level:'low', icon:'✅', title:'Flow Normalized', detail:'Oak & 1st — reduced after intervention', time:'32 min ago' },
+];
+
+const signals = [
+  { id:'SIG-01', phase:'GREEN', timer:22, max:30 },
+  { id:'SIG-02', phase:'RED', timer:8, max:45 },
+  { id:'SIG-03', phase:'YELLOW', timer:3, max:5 },
+  { id:'SIG-04', phase:'GREEN', timer:15, max:30 },
+  { id:'SIG-05', phase:'RED', timer:31, max:45 },
+  { id:'SIG-06', phase:'GREEN', timer:7, max:30 },
+  { id:'SIG-07', phase:'YELLOW', timer:2, max:5 },
+  { id:'SIG-08', phase:'RED', timer:19, max:45 },
+];
+
+const logMessages = [
+  ['VISION-1','Detected 3 vehicles stopped — possible incident INT-B2'],
+  ['ORCH-1','Redistributing flow via Park St corridor +15% capacity'],
+  ['SIGNAL-1','Extended green phase SIG-01 by 8s — queue clearing'],
+  ['PRED-1','Peak load predicted 17:20-17:45 — pre-staging corridors'],
+  ['INC-1','Anomaly cleared at Oak & 1st — density back to normal'],
+  ['ROUTE-1','Rerouted 127 vehicles around Main & 5th construction'],
+  ['ENV-1','Optimized idle time — 0.4t CO₂ saved in last 30 min'],
+  ['EMG-1','Emergency vehicle SN-47 — green corridor activated INT-A4→INT-B4'],
+  ['VISION-1','Bus detected lane 3 INT-B3 — priority signal adjustment'],
+  ['ORCH-1','Multi-agent consensus reached — 6 signal changes deployed'],
+  ['PRED-1','Historical pattern match: 94% confidence — pre-loading buffers'],
+  ['SIGNAL-1','Adaptive phase complete cycle 847 — 34% avg wait improvement'],
+];
+
+const decisionLog = [
+  { agent:'ORCH-1', time:'14:28:05', action:'Initiated green wave on Main St corridor', reason:'VISION-1 detected high density at INT-A4 (88%). PRED-1 forecasts peak in 12 min. Coordinating 4 signals for synchronized progression.', confidence:0.94 },
+  { agent:'VISION-1', time:'14:27:48', action:'Classified pedestrian surge at INT-B2', reason:'Camera feed 3+7 show 23 pedestrians queued. Multimodal fusion confirms with LiDAR data. Recommending extended pedestrian phase.', confidence:0.97 },
+  { agent:'SIGNAL-1', time:'14:27:22', action:'Extended green phase SIG-01 from 30s to 38s', reason:'Queue length increased from 6 to 14 vehicles. Historical pattern suggests 8s extension optimal for clearance without causing adjacent spillback.', confidence:0.89 },
+  { agent:'PRED-1', time:'14:26:55', action:'Activated pre-emptive signal plan PLAN-17', reason:'ML model (LSTM) predicts 340vph surge on Oak St in 18 min. Confidence 91%. Pre-staging signals reduces anticipatory congestion by avg 28%.', confidence:0.91 },
+];
+
+// ═══════════════════════════════════════════════════════════════
+// CLOCK
+// ═══════════════════════════════════════════════════════════════
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent = now.toTimeString().slice(0,8);
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ═══════════════════════════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════════════════════════
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('page-' + name).classList.add('active');
+  if(name==='analytics') setTimeout(drawAnalytics, 50);
+  if(name==='agents') setTimeout(drawAgentGraph, 50);
+  if(name==='signals') setTimeout(drawPhaseDiagram, 50);
+  if(name==='vision') setTimeout(drawCameras, 50);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SIDEBAR — INTERSECTIONS
+// ═══════════════════════════════════════════════════════════════
+function renderIntersectionList() {
+  const el = document.getElementById('intersection-list');
+  el.innerHTML = intersections.map(i => `
+    <div class="agent-item" onclick="selectIntersection('${i.id}')">
+      <div style="width:10px;height:10px;border-radius:50%;background:var(--${i.status});box-shadow:0 0 8px var(--${i.status});flex-shrink:0;"></div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:11px;font-weight:600;">${i.name}</div>
+        <div style="font-size:10px;color:var(--text2);font-family:'JetBrains Mono',monospace;">${i.id} · ${i.flow} vph</div>
+      </div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--${i.status});">${Math.round(i.density*100)}%</div>
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// INCIDENTS
+// ═══════════════════════════════════════════════════════════════
+function renderIncidents() {
+  document.getElementById('incident-list').innerHTML = incidents.map(i => `
+    <div class="incident ${i.level}">
+      <span class="incident-icon">${i.icon}</span>
+      <div>
+        <div class="incident-title">${i.title}</div>
+        <div class="incident-detail">${i.detail}</div>
+        <div class="incident-time">${i.time}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MINI SIGNALS (right panel)
+// ═══════════════════════════════════════════════════════════════
+function renderMiniSignals() {
+  document.getElementById('mini-signals').innerHTML = signals.slice(0,4).map(s => {
+    const pct = Math.round((s.timer / s.max) * 100);
+    const color = s.phase === 'GREEN' ? 'green' : s.phase === 'RED' ? 'red' : 'yellow';
+    return `
+      <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);">
+        <span class="mono" style="font-size:10px;color:var(--text2);min-width:50px;">${s.id}</span>
+        <div style="flex:1;">
+          <div class="timer-bar">
+            <div class="timer-fill" style="width:${pct}%;background:var(--${color});"></div>
+          </div>
+        </div>
+        <span class="mono" style="font-size:11px;color:var(--${color});min-width:30px;text-align:right;">${s.timer}s</span>
+      </div>
+    `;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// AGENT MINI (right panel)
+// ═══════════════════════════════════════════════════════════════
+function renderAgentMini() {
+  document.getElementById('agent-mini-list').innerHTML = agents.slice(0,5).map(a => `
+    <div class="agent-item">
+      <div class="agent-icon ${a.color}">${a.icon}</div>
+      <div style="flex:1;min-width:0;">
+        <div class="agent-name">${a.name}</div>
+        <div class="agent-activity">${a.status.slice(0,32)}...</div>
+      </div>
+      <div class="mono" style="font-size:10px;color:var(--${a.color});">${a.load}%</div>
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SENSOR BARS
+// ═══════════════════════════════════════════════════════════════
+function renderSensorBars() {
+  const sensors = [
+    { label:'Camera AI', val:94, color:'blue' },
+    { label:'LiDAR', val:87, color:'green' },
+    { label:'Radar', val:91, color:'purple' },
+    { label:'Inductive', val:99, color:'cyan' },
+    { label:'Weather', val:76, color:'yellow' },
+  ];
+  document.getElementById('sensor-bars').innerHTML = sensors.map(s => `
+    <div class="bar-row">
+      <span class="bar-label">${s.label}</span>
+      <div class="bar-track"><div class="bar-fill" style="width:${s.val}%;background:var(--${s.color});"></div></div>
+      <span class="bar-val mono" style="color:var(--${s.color});">${s.val}%</span>
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CONGESTION BARS
+// ═══════════════════════════════════════════════════════════════
+function renderCongestionBars() {
+  const zones = [
+    { label:'Main St', val:72, color:'yellow' },
+    { label:'Oak Ave', val:88, color:'red' },
+    { label:'Park Rd', val:45, color:'green' },
+    { label:'Terminal', val:35, color:'green' },
+  ];
+  document.getElementById('congestion-bars').innerHTML = zones.map(z => `
+    <div class="bar-row">
+      <span class="bar-label">${z.label}</span>
+      <div class="bar-track"><div class="bar-fill" style="width:${z.val}%;background:var(--${z.color});"></div></div>
+      <span class="bar-val mono" style="color:var(--${z.color});">${z.val}%</span>
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ACTIVITY LOG
+// ═══════════════════════════════════════════════════════════════
+let logIndex = 0;
+function renderLog() {
+  const el = document.getElementById('activity-log');
+  const colors = { 'ORCH-1':'purple','VISION-1':'blue','PRED-1':'cyan','SIGNAL-1':'green','INC-1':'yellow','ROUTE-1':'blue','ENV-1':'green','EMG-1':'red' };
+  const entries = logMessages.slice(0, 8);
+  el.innerHTML = entries.map((e, i) => {
+    const t = new Date(); t.setSeconds(t.getSeconds() - i*30);
+    const ts = t.toTimeString().slice(0,8);
+    const color = colors[e[0]] || 'blue';
+    return `
+      <div class="log-entry">
+        <span class="log-time">${ts}</span>
+        <span class="log-agent" style="color:var(--${color});">${e[0]}</span>
+        <span class="log-msg">${e[1]}</span>
+      </div>
+    `;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TRAFFIC MAP CANVAS
+// ═══════════════════════════════════════════════════════════════
+let mapAnimFrame;
+function drawTrafficMap() {
+  const container = document.getElementById('map-canvas');
+  const canvas = document.getElementById('traffic-canvas');
+  canvas.width = container.clientWidth;
+  canvas.height = container.clientHeight;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Grid background
+  ctx.strokeStyle = 'rgba(59,130,246,0.04)';
+  ctx.lineWidth = 1;
+  for(let x=0; x<W; x+=30) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+  for(let y=0; y<H; y+=30) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+
+  // Roads (horizontal)
+  const roadYs = [0.2, 0.5, 0.8].map(r => r * H);
+  roadYs.forEach(y => {
+    ctx.strokeStyle = 'rgba(100,120,160,0.25)';
+    ctx.lineWidth = 8;
+    ctx.setLineDash([]);
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+    ctx.strokeStyle = 'rgba(245,158,11,0.15)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([8, 12]);
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+    ctx.setLineDash([]);
+  });
+
+  // Roads (vertical)
+  const roadXs = [0.15, 0.38, 0.62, 0.85].map(r => r * W);
+  roadXs.forEach(x => {
+    ctx.strokeStyle = 'rgba(100,120,160,0.25)';
+    ctx.lineWidth = 8;
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+    ctx.strokeStyle = 'rgba(245,158,11,0.15)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([8, 12]);
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+    ctx.setLineDash([]);
+  });
+
+  // Draw animated vehicles
+  const now = Date.now();
+  for(let v=0; v<60; v++) {
+    const seed = v * 137.5;
+    const road = Math.floor(seed) % 7;
+    let vx, vy, size;
+
+    if(road < 3) {
+      const y = roadYs[road];
+      const t = ((now * 0.0002 * (0.5 + (seed%1))) + seed * 0.01) % 1;
+      vx = t * W; vy = y + (Math.sin(seed) * 2);
+      size = 4;
+    } else {
+      const x = roadXs[road-3];
+      const t = ((now * 0.00015 * (0.5 + (seed%1)*0.5)) + seed * 0.012) % 1;
+      vx = x + (Math.sin(seed)*2); vy = t * H;
+      size = 4;
+    }
+
+    const alpha = 0.6 + Math.sin(now*0.003 + seed)*0.2;
+    ctx.fillStyle = `rgba(${road<3?'59,130,246':'6,214,160'},${alpha})`;
+    ctx.beginPath();
+    ctx.roundRect(vx - size/2, vy - size/2, size*2, size, 1);
+    ctx.fill();
+  }
+
+  // Draw intersection nodes
+  intersections.forEach(int => {
+    const x = int.x * W, y = int.y * H;
+    const colors = { green:[6,214,160], yellow:[245,158,11], red:[239,68,68] };
+    const [r,g,b] = colors[int.status];
+
+    // Glow
+    const grd = ctx.createRadialGradient(x,y,0, x,y,20);
+    grd.addColorStop(0, `rgba(${r},${g},${b},0.3)`);
+    grd.addColorStop(1, 'transparent');
+    ctx.fillStyle = grd;
+    ctx.beginPath(); ctx.arc(x, y, 20, 0, Math.PI*2); ctx.fill();
+
+    // Density ring
+    ctx.strokeStyle = `rgba(${r},${g},${b},0.4)`;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(x, y, 12, 0, Math.PI * 2 * int.density);
+    ctx.stroke();
+
+    // Node
+    ctx.fillStyle = `rgba(${r},${g},${b},0.2)`;
+    ctx.strokeStyle = `rgba(${r},${g},${b},0.9)`;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(x, y, 7, 0, Math.PI*2);
+    ctx.fill(); ctx.stroke();
+
+    // Label
+    ctx.fillStyle = 'rgba(148,163,184,0.9)';
+    ctx.font = '9px "JetBrains Mono"';
+    ctx.textAlign = 'center';
+    ctx.fillText(int.id, x, y + 20);
+  });
+
+  mapAnimFrame = requestAnimationFrame(drawTrafficMap);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FLOW CHART (mini)
+// ═══════════════════════════════════════════════════════════════
+function drawFlowChart() {
+  const canvas = document.getElementById('flow-chart');
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth;
+  const W = canvas.width, H = canvas.height = 80;
+
+  const data = Array.from({length:24}, (_,i) => {
+    const base = 1500 + Math.sin(i*0.5)*800 + (i>7&&i<10?1200:0) + (i>16&&i<20?1800:0);
+    return base + Math.random()*200;
+  });
+  const max = Math.max(...data);
+
+  ctx.clearRect(0,0,W,H);
+
+  // Area fill
+  const grd = ctx.createLinearGradient(0,0,0,H);
+  grd.addColorStop(0,'rgba(59,130,246,0.3)');
+  grd.addColorStop(1,'rgba(59,130,246,0)');
+  ctx.fillStyle = grd;
+  ctx.beginPath();
+  ctx.moveTo(0,H);
+  data.forEach((d,i) => { ctx.lineTo(i/(data.length-1)*W, H - (d/max)*(H-8)); });
+  ctx.lineTo(W,H); ctx.closePath(); ctx.fill();
+
+  // Line
+  ctx.strokeStyle = 'rgba(59,130,246,0.9)'; ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  data.forEach((d,i) => {
+    const x = i/(data.length-1)*W, y = H - (d/max)*(H-8);
+    i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+
+  // Hour labels
+  ctx.fillStyle = 'rgba(100,116,139,0.7)'; ctx.font = '8px "JetBrains Mono"';
+  ctx.textAlign = 'center';
+  [0,6,12,18,23].forEach(h => {
+    ctx.fillText(h+'h', h/(data.length-1)*W, H-1);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// EMISSION CHART (mini)
+// ═══════════════════════════════════════════════════════════════
+function drawEmissionChart() {
+  const canvas = document.getElementById('emission-chart');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth;
+  const W = canvas.width, H = canvas.height = 50;
+  const data = [0.1,0.15,0.2,0.25,0.32,0.4,0.5,0.62,0.78,0.9,1.05,1.2,1.4,1.6,1.8,2.0,2.1,2.4].slice(0,18);
+  const max = Math.max(...data);
+  ctx.clearRect(0,0,W,H);
+  const grd = ctx.createLinearGradient(0,0,0,H);
+  grd.addColorStop(0,'rgba(6,214,160,0.3)');
+  grd.addColorStop(1,'rgba(6,214,160,0)');
+  ctx.fillStyle = grd;
+  ctx.beginPath();
+  ctx.moveTo(0,H);
+  data.forEach((d,i) => ctx.lineTo(i/(data.length-1)*W, H-(d/max)*(H-4)));
+  ctx.lineTo(W,H); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle='rgba(6,214,160,0.8)'; ctx.lineWidth=1.5;
+  ctx.beginPath();
+  data.forEach((d,i) => { const x=i/(data.length-1)*W, y=H-(d/max)*(H-4); i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); });
+  ctx.stroke();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// AGENTS PAGE
+// ═══════════════════════════════════════════════════════════════
+function renderAgentGrid() {
+  document.getElementById('agent-detail-grid').innerHTML = `
+    <div class="card" style="margin-bottom:0;">
+      <div class="card-header"><span class="card-title">DEPLOYED AGENTS</span><span class="badge badge-purple">${agents.length} ACTIVE</span></div>
+      ${agents.map(a => `
+        <div class="agent-item">
+          <div class="agent-icon ${a.color}">${a.icon}</div>
+          <div style="flex:1;min-width:0;">
+            <div class="agent-name">${a.name}</div>
+            <div class="agent-status">${a.role}</div>
+            <div class="agent-activity">${a.status}</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="mono" style="font-size:10px;color:var(--${a.color});">${a.load}%</div>
+            <div class="mono" style="font-size:9px;color:var(--text3);">${a.decisions.toLocaleString()} dec</div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+
+  // Decision log
+  document.getElementById('decision-log-view').innerHTML = decisionLog.map(d => `
+    <div class="decision-entry">
+      <div class="decision-header">
+        <span class="decision-agent">${d.agent}</span>
+        <span class="decision-time mono">${d.time}</span>
+      </div>
+      <div class="decision-action">${d.action}</div>
+      <div class="decision-reason">${d.reason}</div>
+      <div class="decision-confidence">confidence: ${Math.round(d.confidence*100)}%</div>
+    </div>
+  `).join('');
+}
+
+function drawAgentGraph() {
+  const canvas = document.getElementById('agent-graph');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth;
+  const W = canvas.width, H = 200;
+
+  const positions = [
+    {x:0.5,y:0.15,a:agents[0]},
+    {x:0.15,y:0.5,a:agents[1]},
+    {x:0.85,y:0.5,a:agents[2]},
+    {x:0.3,y:0.85,a:agents[3]},
+    {x:0.7,y:0.85,a:agents[4]},
+    {x:0.5,y:0.55,a:agents[5]},
+    {x:0.15,y:0.85,a:agents[6]},
+    {x:0.85,y:0.85,a:agents[7]},
+  ].map(p => ({...p, px:p.x*W, py:p.y*H}));
+
+  ctx.clearRect(0,0,W,H);
+
+  // Edges from orchestrator
+  positions.slice(1).forEach(p => {
+    ctx.strokeStyle = 'rgba(139,92,246,0.2)'; ctx.lineWidth = 1;
+    ctx.setLineDash([3,5]);
+    ctx.beginPath(); ctx.moveTo(positions[0].px, positions[0].py); ctx.lineTo(p.px, p.py); ctx.stroke();
+  });
+  ctx.setLineDash([]);
+
+  positions.forEach((p, i) => {
+    const colors = { purple:'139,92,246', blue:'59,130,246', cyan:'6,182,212', green:'6,214,160', yellow:'245,158,11', red:'239,68,68' };
+    const colorKey = p.a.color;
+    const rgb = colors[colorKey] || '59,130,246';
+    ctx.fillStyle = `rgba(${rgb},0.15)`;
+    ctx.strokeStyle = `rgba(${rgb},0.8)`;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(p.px, p.py, i===0?14:10, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = 'rgba(226,232,240,0.9)';
+    ctx.font = `${i===0?8:7}px "JetBrains Mono"`;
+    ctx.textAlign = 'center';
+    ctx.fillText(p.a.icon, p.px, p.py+3);
+    ctx.fillStyle = 'rgba(148,163,184,0.7)';
+    ctx.font = '8px "JetBrains Mono"';
+    ctx.fillText(p.a.name.slice(0,8), p.px, p.py + (i===0?22:18));
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SIGNALS PAGE
+// ═══════════════════════════════════════════════════════════════
+function renderSignalGrid() {
+  document.getElementById('signal-grid').innerHTML = signals.map(s => {
+    const color = s.phase === 'GREEN' ? 'green' : s.phase === 'RED' ? 'red' : 'yellow';
+    const pct = Math.round((s.timer/s.max)*100);
+    return `
+      <div class="signal-card">
+        <div class="signal-id">${s.id}</div>
+        <div class="signal-lights">
+          <div class="light r ${s.phase==='RED'?'active':''}"></div>
+          <div class="light y ${s.phase==='YELLOW'?'active':''}"></div>
+          <div class="light g ${s.phase==='GREEN'?'active':''}"></div>
+        </div>
+        <div class="signal-timer" style="color:var(--${color});">${s.timer}s</div>
+        <div class="signal-phase">${s.phase}</div>
+        <div class="timer-bar">
+          <div class="timer-fill" style="width:${pct}%;background:var(--${color});"></div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function drawPhaseDiagram() {
+  const canvas = document.getElementById('phase-diagram');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth;
+  const W = canvas.width, H = 120;
+  ctx.clearRect(0,0,W,H);
+
+  const phases = ['SIG-01','SIG-02','SIG-03','SIG-04'];
+  const phaseData = [
+    [{c:'green',w:0.4},{c:'yellow',w:0.05},{c:'red',w:0.45},{c:'green',w:0.1}],
+    [{c:'red',w:0.45},{c:'green',w:0.4},{c:'yellow',w:0.05},{c:'red',w:0.1}],
+    [{c:'yellow',w:0.05},{c:'red',w:0.45},{c:'green',w:0.4},{c:'yellow',w:0.1}],
+    [{c:'green',w:0.3},{c:'yellow',w:0.05},{c:'red',w:0.4},{c:'green',w:0.25}],
+  ];
+
+  const rowH = 22, margin = 60, topPad = 16;
+  const colors = { green:'rgba(6,214,160,0.7)', yellow:'rgba(245,158,11,0.7)', red:'rgba(239,68,68,0.7)' };
+
+  phases.forEach((label, i) => {
+    const y = topPad + i*rowH;
+    ctx.fillStyle = 'rgba(148,163,184,0.6)';
+    ctx.font = '9px "JetBrains Mono"';
+    ctx.textAlign = 'right';
+    ctx.fillText(label, margin-6, y+10);
+
+    let x = margin;
+    phaseData[i].forEach(seg => {
+      const w = seg.w * (W - margin - 8);
+      ctx.fillStyle = colors[seg.c];
+      ctx.fillRect(x, y, w-1, 18);
+      x += w;
+    });
+  });
+
+  // Time axis
+  ctx.strokeStyle = 'rgba(100,116,139,0.3)'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(margin, topPad+phases.length*rowH+2); ctx.lineTo(W-8, topPad+phases.length*rowH+2); ctx.stroke();
+  ctx.fillStyle='rgba(100,116,139,0.6)'; ctx.font='8px "JetBrains Mono"'; ctx.textAlign='center';
+  [0,30,60,90,120].forEach(t => {
+    const x = margin + (t/120)*(W-margin-8);
+    ctx.fillText(t+'s', x, topPad+phases.length*rowH+12);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// VISION / CAMERAS
+// ═══════════════════════════════════════════════════════════════
+const camData = [
+  { id:'CAM-01', loc:'Main & Oak', cars:12, peds:4 },
+  { id:'CAM-02', loc:'Center Hub', cars:28, peds:17 },
+  { id:'CAM-03', loc:'Main & 5th', cars:19, peds:6 },
+  { id:'CAM-04', loc:'Oak & Park', cars:8, peds:3 },
+];
+
+function drawCameras() {
+  const grid = document.getElementById('cameras-grid');
+  grid.innerHTML = camData.map((c,i) => `
+    <div class="cam-feed">
+      <canvas class="cam-canvas" id="cam-cv-${i}"></canvas>
+      <div class="cam-label">${c.id} · ${c.loc}</div>
+      <div class="cam-rec"></div>
+      <div class="cam-overlay">
+        <span class="cam-stat">🚗 ${c.cars} vehicles · 🚶 ${c.peds} peds</span>
+        <span class="cam-count">${c.cars + c.peds} obj</span>
+      </div>
+    </div>
+  `).join('');
+
+  setTimeout(() => {
+    camData.forEach((c,i) => {
+      const canvas = document.getElementById(`cam-cv-${i}`);
+      if(!canvas) return;
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+      drawCamFeed(canvas.getContext('2d'), canvas.width, canvas.height, c, i);
+    });
+  }, 50);
+
+  // Detection stats
+  document.getElementById('detection-stats').innerHTML = `
+    <div class="bar-row"><span class="bar-label">Cars</span><div class="bar-track"><div class="bar-fill" style="width:75%;background:var(--blue);"></div></div><span class="bar-val mono">67</span></div>
+    <div class="bar-row"><span class="bar-label">Trucks</span><div class="bar-track"><div class="bar-fill" style="width:20%;background:var(--yellow);"></div></div><span class="bar-val mono">18</span></div>
+    <div class="bar-row"><span class="bar-label">Bikes</span><div class="bar-track"><div class="bar-fill" style="width:12%;background:var(--green);"></div></div><span class="bar-val mono">11</span></div>
+    <div class="bar-row"><span class="bar-label">Pedestrians</span><div class="bar-track"><div class="bar-fill" style="width:33%;background:var(--purple);"></div></div><span class="bar-val mono">30</span></div>
+    <div class="bar-row"><span class="bar-label">Buses</span><div class="bar-track"><div class="bar-fill" style="width:8%;background:var(--cyan);"></div></div><span class="bar-val mono">7</span></div>
+  `;
+
+  document.getElementById('fusion-display').innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:6px;font-size:11px;">
+      <div style="display:flex;justify-content:space-between;padding:6px;background:rgba(59,130,246,0.05);border-radius:6px;border:1px solid rgba(59,130,246,0.1);">
+        <span style="color:var(--text2);">📷 Camera</span><span class="mono" style="color:var(--blue);">94.2% conf</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:6px;background:rgba(6,214,160,0.05);border-radius:6px;border:1px solid rgba(6,214,160,0.1);">
+        <span style="color:var(--text2);">📡 LiDAR</span><span class="mono" style="color:var(--green);">87.8% conf</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:6px;background:rgba(139,92,246,0.05);border-radius:6px;border:1px solid rgba(139,92,246,0.1);">
+        <span style="color:var(--text2);">📻 Radar</span><span class="mono" style="color:var(--purple);">91.4% conf</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:6px;background:rgba(245,158,11,0.05);border-radius:6px;border:1px solid rgba(245,158,11,0.1);">
+        <span style="color:var(--text2);">🌡️ Weather</span><span class="mono" style="color:var(--yellow);">Clear 28°C</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:6px;background:rgba(6,214,160,0.08);border-radius:6px;border:1px solid rgba(6,214,160,0.2);margin-top:4px;">
+        <span style="color:var(--green);font-weight:600;">🔗 Fused Confidence</span><span class="mono" style="color:var(--green);font-weight:700;">97.1%</span>
+      </div>
+    </div>
+  `;
+}
+
+function drawCamFeed(ctx, W, H, camInfo, seed) {
+  ctx.fillStyle = '#030810';
+  ctx.fillRect(0,0,W,H);
+
+  // Road
+  ctx.fillStyle = '#0f1820';
+  ctx.fillRect(0, H*0.35, W, H*0.65);
+  ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([10,15]);
+  ctx.beginPath(); ctx.moveTo(W*0.3, H*0.35); ctx.lineTo(W*0.45, H); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(W*0.7, H*0.35); ctx.lineTo(W*0.55, H); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Bounding boxes for vehicles
+  const now = Date.now();
+  for(let v=0; v<Math.min(camInfo.cars, 6); v++) {
+    const vs = (seed*100+v*73);
+    const t = ((now*0.0001*(0.3+v*0.1))+vs*0.01)%1;
+    const x = (0.1 + t*0.8) * W;
+    const y = H*0.5 + v*8 + Math.sin(now*0.001+vs)*3;
+    const bw = 22, bh = 12;
+    ctx.strokeStyle = 'rgba(59,130,246,0.8)'; ctx.lineWidth = 1;
+    ctx.strokeRect(x-bw/2, y-bh/2, bw, bh);
+    ctx.fillStyle = 'rgba(59,130,246,0.2)';
+    ctx.fillRect(x-bw/2, y-bh/2, bw, bh);
+    ctx.fillStyle = 'rgba(59,130,246,0.9)';
+    ctx.font = '7px "JetBrains Mono"';
+    ctx.textAlign = 'center';
+    ctx.fillText('CAR', x, y-bh/2-2);
+  }
+
+  // Scan line effect
+  const scanY = (now * 0.08) % H;
+  const grd = ctx.createLinearGradient(0, scanY-8, 0, scanY+8);
+  grd.addColorStop(0,'transparent'); grd.addColorStop(0.5,'rgba(6,214,160,0.08)'); grd.addColorStop(1,'transparent');
+  ctx.fillStyle = grd;
+  ctx.fillRect(0, scanY-8, W, 16);
+
+  // Corner markers
+  const cm = 8;
+  ctx.strokeStyle='rgba(6,214,160,0.5)'; ctx.lineWidth=1.5;
+  [[0,0],[W,0],[0,H],[W,H]].forEach(([cx,cy]) => {
+    const sx = cx===0?1:-1, sy = cy===0?1:-1;
+    ctx.beginPath(); ctx.moveTo(cx+sx*cm,cy); ctx.lineTo(cx,cy); ctx.lineTo(cx,cy+sy*cm); ctx.stroke();
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ANALYTICS PAGE
+// ═══════════════════════════════════════════════════════════════
+function drawAnalytics() {
+  drawThroughputChart();
+  drawModeChart();
+  drawPerfChart();
+}
+
+function drawThroughputChart() {
+  const canvas = document.getElementById('throughput-chart');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth;
+  const W = canvas.width, H = 160;
+  ctx.clearRect(0,0,W,H);
+
+  const labels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const baseline = [3200,3400,3100,3600,4200,2800,2100];
+  const optimized = [3800,4100,3750,4300,5100,3200,2400];
+  const barW = (W - 60) / labels.length;
+
+  labels.forEach((label, i) => {
+    const x = 30 + i * barW;
+    const maxV = 5500;
+
+    ctx.fillStyle = 'rgba(100,116,139,0.3)';
+    ctx.fillRect(x+4, 8, barW*0.35, H-28);
+
+    ctx.fillStyle = 'rgba(59,130,246,0.5)';
+    const bH = (baseline[i]/maxV)*(H-28);
+    ctx.fillRect(x+4, H-20-bH, barW*0.35, bH);
+
+    ctx.fillStyle = 'rgba(6,214,160,0.6)';
+    const oH = (optimized[i]/maxV)*(H-28);
+    ctx.fillRect(x+barW*0.4, H-20-oH, barW*0.35, oH);
+
+    ctx.fillStyle='rgba(148,163,184,0.6)'; ctx.font='8px "JetBrains Mono"';
+    ctx.textAlign='center'; ctx.fillText(label, x+barW*0.38, H-8);
+  });
+
+  // Legend
+  [[30,'rgba(59,130,246,0.7)','Baseline'],[110,'rgba(6,214,160,0.7)','Optimized']].forEach(([x,c,l]) => {
+    ctx.fillStyle=c; ctx.fillRect(x,H-4,8,4);
+    ctx.fillStyle='rgba(148,163,184,0.7)'; ctx.font='8px "JetBrains Mono"'; ctx.textAlign='left';
+    ctx.fillText(l, x+10, H-1);
+  });
+}
+
+function drawModeChart() {
+  const canvas = document.getElementById('mode-chart');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth;
+  const W = canvas.width, H = 160;
+  ctx.clearRect(0,0,W,H);
+
+  const modes = [{label:'Cars',val:0.61,color:'rgba(59,130,246,0.8)'},{label:'Trucks',val:0.14,color:'rgba(245,158,11,0.8)'},{label:'Buses',val:0.08,color:'rgba(6,182,212,0.8)'},{label:'Bikes',val:0.1,color:'rgba(6,214,160,0.8)'},{label:'Peds',val:0.07,color:'rgba(139,92,246,0.8)'}];
+  const cx = W*0.4, cy = H*0.5, r = Math.min(cx, cy) - 20;
+
+  let startA = -Math.PI/2;
+  modes.forEach(m => {
+    const a = m.val * Math.PI * 2;
+    ctx.fillStyle = m.color;
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,r,startA,startA+a); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle='rgba(10,14,26,0.8)'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,r,startA,startA+a); ctx.closePath(); ctx.stroke();
+    startA += a;
+  });
+
+  ctx.fillStyle='rgba(10,14,26,0.8)'; ctx.beginPath(); ctx.arc(cx,cy,r*0.5,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='rgba(226,232,240,0.9)'; ctx.font='bold 12px "JetBrains Mono"'; ctx.textAlign='center';
+  ctx.fillText('MODE', cx, cy-4); ctx.fillText('SPLIT', cx, cy+10);
+
+  modes.forEach((m,i) => {
+    const y = 18 + i*24;
+    const x2 = W*0.75;
+    ctx.fillStyle = m.color; ctx.fillRect(x2, y-6, 10, 10);
+    ctx.fillStyle='rgba(226,232,240,0.8)'; ctx.font='9px "JetBrains Mono"'; ctx.textAlign='left';
+    ctx.fillText(`${m.label} ${Math.round(m.val*100)}%`, x2+14, y+2);
+  });
+}
+
+function drawPerfChart() {
+  const canvas = document.getElementById('perf-chart');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth;
+  const W = canvas.width, H = 100;
+  ctx.clearRect(0,0,W,H);
+
+  const metrics = [
+    { label:'Throughput', data: Array.from({length:20},(_,i)=>60+Math.sin(i*0.7)*15+i*1.2), color:'rgba(59,130,246,0.8)' },
+    { label:'Wait Time', data: Array.from({length:20},(_,i)=>70-Math.sin(i*0.5)*10-i*1.5), color:'rgba(239,68,68,0.6)' },
+    { label:'Emissions', data: Array.from({length:20},(_,i)=>80-Math.cos(i*0.4)*8-i*1.8), color:'rgba(6,214,160,0.7)' },
+  ];
+
+  metrics.forEach(m => {
+    const max = Math.max(...m.data), min = Math.min(...m.data);
+    ctx.strokeStyle = m.color; ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    m.data.forEach((v,i) => {
+      const x = i/(m.data.length-1)*W;
+      const y = H - ((v-min)/(max-min+1))*(H-12)-6;
+      i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+  });
+
+  // Legend
+  metrics.forEach((m,i) => {
+    const x = 20 + i*90;
+    ctx.strokeStyle=m.color; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(x,H-4); ctx.lineTo(x+14,H-4); ctx.stroke();
+    ctx.fillStyle='rgba(148,163,184,0.7)'; ctx.font='8px "JetBrains Mono"'; ctx.textAlign='left';
+    ctx.fillText(m.label, x+16, H-1);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CONTROLS
+// ═══════════════════════════════════════════════════════════════
+function triggerOptimize() {
+  addLogEntry('ORCH-1', 'Global optimization initiated — all 12 intersections synchronized');
+}
+function triggerGreenWave() {
+  addLogEntry('SIGNAL-1', 'Green wave activated Main St corridor — 6 signals coordinated at 42km/h');
+}
+function triggerIncident() {
+  incidents.unshift({ level:'high', icon:'🚨', title:'Simulated Incident', detail:'INT-A3 — Multi-vehicle scenario triggered', time:'just now' });
+  renderIncidents();
+  addLogEntry('INC-1', 'INCIDENT DETECTED — INT-A3 emergency protocol activated');
+}
+
+let logEntries = [...logMessages];
+function addLogEntry(agent, msg) {
+  logEntries.unshift([agent, msg]);
+  renderLog();
+}
+
+function showAIPanel() { document.getElementById('ai-modal').classList.add('open'); }
+function closeModal() { document.getElementById('ai-modal').classList.remove('open'); }
+
+const agentOutputs = {
+  optimize: '⚡ GLOBAL OPTIMIZE INITIATED\n> Analyzing 12 intersections...\n> Consensus reached in 0.4s\n> Deploying 28 signal changes\n> ETA improvement: +18% throughput',
+  greenwave: '🌊 GREEN WAVE MODE ACTIVE\n> Corridor: Main St W→E\n> Speed: 42 km/h\n> Signals: SIG-01→02→03→04→05\n> Duration: 15 min cycle',
+  emergency: '🚨 EMERGENCY CORRIDOR READY\n> Path: INT-A1→INT-B1→INT-C1\n> ETA clear: 45 seconds\n> Affected signals: 6 overridden',
+  predict: '🔮 30-MIN PREDICTION LOADED\n> Peak: 17:20-17:45 (+340 vph)\n> Hotspot: Center Hub (95%)\n> Pre-stage plan: PLAN-17 ready\n> Confidence: 91%',
+};
+function agentCmd(type) {
+  document.getElementById('modal-agent-output').textContent = agentOutputs[type] || '';
+}
+
+function selectIntersection(id) {
+  const int = intersections.find(i => i.id === id);
+  if(int) addLogEntry('ORCH-1', `Selected ${id} — density ${Math.round(int.density*100)}% — ${int.flow} vph`);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// LIVE KPI UPDATES
+// ═══════════════════════════════════════════════════════════════
+function updateKPIs() {
+  const flow = 4200 + Math.round(Math.random()*200-100);
+  const speed = (42 + Math.random()*2-1).toFixed(1);
+  const wait = (18 + Math.random()*2-1).toFixed(1);
+  const decisions = 230 + Math.round(Math.random()*40);
+  document.getElementById('kpi-flow').textContent = flow.toLocaleString();
+  document.getElementById('kpi-speed').textContent = speed;
+  document.getElementById('kpi-wait').textContent = wait;
+  document.getElementById('kpi-decisions').textContent = decisions;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SIGNAL TIMER COUNTDOWN
+// ═══════════════════════════════════════════════════════════════
+function tickSignals() {
+  signals.forEach(s => {
+    s.timer--;
+    if(s.timer <= 0) {
+      if(s.phase==='GREEN') { s.phase='YELLOW'; s.timer=5; s.max=5; }
+      else if(s.phase==='YELLOW') { s.phase='RED'; s.timer=45; s.max=45; }
+      else { s.phase='GREEN'; s.timer=30; s.max=30; }
+    }
+  });
+  renderMiniSignals();
+  renderSignalGrid();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// INIT & LOOP
+// ═══════════════════════════════════════════════════════════════
+function init() {
+  renderIntersectionList();
+  renderIncidents();
+  renderMiniSignals();
+  renderAgentMini();
+  renderSensorBars();
+  renderCongestionBars();
+  renderLog();
+  renderSignalGrid();
+  renderAgentGrid();
+
+  setTimeout(() => {
+    drawTrafficMap();
+    drawFlowChart();
+    drawEmissionChart();
+  }, 100);
+
+  setInterval(updateKPIs, 3000);
+  setInterval(tickSignals, 1000);
+  setInterval(() => {
+    const msgs = logMessages;
+    const randomMsg = msgs[Math.floor(Math.random()*msgs.length)];
+    addLogEntry(randomMsg[0], randomMsg[1]);
+  }, 5000);
+}
+
+window.addEventListener('load', init);
+window.addEventListener('resize', () => {
+  cancelAnimationFrame(mapAnimFrame);
+  setTimeout(drawTrafficMap, 100);
+  drawFlowChart();
+  drawEmissionChart();
+});
+</script>
+</body>
+</html>
